@@ -1,0 +1,75 @@
+
+atmosphere-grid:
+  bottom: 0.0
+  top: 8.0e+07
+  number-of-layers: 100
+
+photolysis-grid:
+  regular-grid: true
+  lower-wavelength: 92.5
+  upper-wavelength: 855.0
+  number-of-bins: 200
+
+planet:
+  background-gas: H2
+  surface-pressure: 1.0
+  planet-mass: 5.153981e+28 # grams
+  planet-radius: 1.664684e+09 # cm
+  surface-albedo: 0.06
+  solar-zenith-angle: 60.0
+  photon-scale-factor: 0.7 # Assumes 70% of radiation is reflected off of the top of the atmosphere.
+  hydrogen-escape:
+    type: none
+  water:
+    fix-water-in-troposphere: true
+    relative-humidity: 1.0
+    gas-rainout: false
+    rainfall-rate: 1.0
+    tropopause-altitude: 2.22056939197779144e+007
+    water-condensation: true
+    condensation-rate: {A: 1.0e-5, rhc: 1, rh0: 1.05}
+
+particles:
+- name: H2SO4aer
+  condensation-rate: {A: 1.0e-5, rhc: 1.0, rh0: 1.05}
+- name: HCNaer
+  condensation-rate: {A: 1.0e-8, rhc: 1.0, rh0: 1.05}
+- name: HCCCNaer
+  condensation-rate: {A: 1.0e-8, rhc: 1.0, rh0: 1.05}
+- name: CH3CNaer
+  condensation-rate: {A: 1.0e-8, rhc: 1.0, rh0: 1.05}
+- name: C2H2aer
+  condensation-rate: {A: 1.0e-8, rhc: 1.0, rh0: 1.05}
+- name: C2H4aer
+  condensation-rate: {A: 1.0e-8, rhc: 1.0, rh0: 1.05}
+- name: C2H6aer
+  condensation-rate: {A: 1.0e-8, rhc: 1.0, rh0: 1.05}
+- name: C4H4aer
+  condensation-rate: {A: 1.0e-8, rhc: 1.0, rh0: 1.05}
+- name: N2Oaer
+  condensation-rate: {A: 1.0e-8, rhc: 1.0, rh0: 1.05}
+- name: NH3aer
+  condensation-rate: {A: 1.0e-7, rhc: 1.0, rh0: 1.05}
+
+boundary-conditions:
+- name: O1D
+  type: short lived
+- name: N2D
+  type: short lived
+- name: CO2
+  lower-boundary: {type: mix, mix: 0.008}
+  upper-boundary: {type: veff, veff: 0.0}
+- name: N2
+  lower-boundary: {type: mix, mix: 0.01}
+  upper-boundary: {type: veff, veff: 0.0}
+- name: C2H6
+  lower-boundary: {type: vdep, vdep: 1.0e-5}
+  upper-boundary: {type: veff, veff: 0.0}
+- name: HCN
+  lower-boundary: {type: vdep, vdep: 7.0e-3}
+  upper-boundary: {type: veff, veff: 0.0}
+- name: HCCCN
+  lower-boundary: {type: vdep, vdep: 7.0e-3}
+  upper-boundary: {type: veff, veff: 0.0}
+
+      
