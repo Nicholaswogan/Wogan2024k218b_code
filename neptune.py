@@ -197,12 +197,17 @@ def integrate_quench_equilibrium(pc, P, T, P_top):
 
     usol_prev = pc.wrk.usol.copy()
     counter = 0
+    nsteps = 0
     nerrors = 0
     try:
         while True: 
             try:
                 for i in range(500):
                     pc.step()
+                    nsteps += 1
+                    if nsteps > 100_000:
+                        # Good enough!
+                        break
             except PhotoException as e:
                 usol = np.clip(pc.wrk.usol,a_min=1.0e-40,a_max=np.inf)
                 pc.initialize_stepper(usol)
@@ -213,7 +218,7 @@ def integrate_quench_equilibrium(pc, P, T, P_top):
             usol_new = pc.wrk.usol.copy()
             inds = np.where(usol_new>1e-10)
             rel_change = np.max(np.abs(usol_new[inds]/usol_prev[inds] - 1))
-            print('%.2e  %i'%(rel_change, counter))
+            print('%.2e  %i  %i'%(rel_change, counter, nsteps))
             usol_prev = usol_new.copy()
             if rel_change < 1e-3:
                 break
@@ -288,13 +293,11 @@ def make_picaso_input_neptune(outfile):
     pc1 = Atmosphere('input/zahnle_earth_new_noparticles.yaml',\
                     outfile+'_settings_quench.yaml',\
                     "input/k2_18b_stellar_flux.txt",\
-                    outfile+'_atmosphere_quench_c.txt',
-                    data_dir='/Users/nicholas/Documents/Research_local/PhotochemPy/photochem_clima_data')
+                    outfile+'_atmosphere_quench_c.txt')
     pc2 = Atmosphere('input/zahnle_earth_new_S8.yaml',\
                     outfile+'_settings_photochem.yaml',\
                     "input/k2_18b_stellar_flux.txt",\
-                    outfile+'_atmosphere_photochem_c.txt',
-                    data_dir='/Users/nicholas/Documents/Research_local/PhotochemPy/photochem_clima_data')
+                    outfile+'_atmosphere_photochem_c.txt')
     
     mix = {}
     mix['press'] = np.append(pc1.wrk.pressure,pc2.wrk.pressure)
@@ -327,8 +330,7 @@ def run_quench_photochem_model(settings_quench_in, settings_photochem_in, PTfile
     pc_q = Atmosphere('input/zahnle_earth_new_noparticles.yaml',\
                     settings_quench_out,\
                     "input/k2_18b_stellar_flux.txt",\
-                    atmosphere_quench_out,
-                    data_dir='/Users/nicholas/Documents/Research_local/PhotochemPy/photochem_clima_data')
+                    atmosphere_quench_out)
     pc_q.var.custom_binary_diffusion_fcn = utils.custom_binary_diffusion_fcn
     integrate_quench_equilibrium(pc_q, P, T, P_top)
 
@@ -362,8 +364,7 @@ def run_quench_photochem_model(settings_quench_in, settings_photochem_in, PTfile
     pc = Atmosphere('input/zahnle_earth_new_S8.yaml',\
                     settings_photochem_out,\
                     "input/k2_18b_stellar_flux.txt",\
-                    atmosphere_photochem_out,
-                    data_dir='/Users/nicholas/Documents/Research_local/PhotochemPy/photochem_clima_data')
+                    atmosphere_photochem_out)
     pc.var.custom_binary_diffusion_fcn = utils.custom_binary_diffusion_fcn
     pc.var.equilibrium_time = equilibrium_time
     pc.var.atol = 1e-25
@@ -371,11 +372,17 @@ def run_quench_photochem_model(settings_quench_in, settings_photochem_in, PTfile
     pc.initialize_stepper(pc.wrk.usol)
     tn = 0.0
     counter = 0
+    nsteps = 0
     try:
         while tn < pc.var.equilibrium_time:
             tn = pc.step()
             counter += 1
+            nsteps += 1
+            if nsteps > 50_000:
+                # call it converged
+                break
             if counter > 3000:
+                print(nsteps)
                 pc.update_vertical_grid(TOA_pressure=1e-8*1e6)
                 pc.set_press_temp_edd(c.P, c.T, eddy_, c.P_trop)
                 pc.initialize_stepper(pc.wrk.usol)
@@ -496,5 +503,8 @@ def nominal_S():
     params['eddy_p'] = 1e3
     return params
 
-if __name__ == '__main__':
+def main():
     run_quench_photochem_model(**nominal_S())
+
+if __name__ == '__main__':
+    main()

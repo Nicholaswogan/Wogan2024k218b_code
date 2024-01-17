@@ -13,9 +13,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 def compute_spectra(add_water_cloud, add_all_clouds, outfile):
-    filename_db = os.path.join(os.getenv('picaso_refdata'), 'opacities','all_opacities_0.6_6_R60000.db')
-    opa = jdi.opannection(filename_db=filename_db,wave_range=[0.01,100])
-    opa = jdi.opannection(wave_range=[.01,100],filename_db=filename_db)
+    opa = jdi.opannection(wave_range=[0.01,100])
     case1 = jdi.inputs()
     case1.phase_angle(0)
     case1.gravity(mass=planets.k2_18b.mass, mass_unit=jdi.u.Unit('M_earth'),
@@ -24,14 +22,12 @@ def compute_spectra(add_water_cloud, add_all_clouds, outfile):
             radius_unit = jdi.u.Unit('R_sun'),database='phoenix')
     case1.approx(p_reference=1.0)
 
-    model_type = ['habitable','habitable','habitable','neptune','neptune']
-    model_names = ['model1a','model1b','model1c','nominal_S','nominal_S_Kzz4']
+    model_type = ['habitable','habitable','neptune']
+    model_names = ['model1','model2','nominal_S']
     model_folders = [
         'results/habitable/',
         'results/habitable/',
-        'results/habitable/',
         'results/neptune/',
-        'results/neptune/'
     ]
 
     species_to_exclude = [['H2O'],['NH3'],['CO2'],['CH4'],['CO'],['HCN'],['C2H6'],['H2S']]
@@ -210,7 +206,7 @@ def compute_statistics(infile, out_stats_file):
     with open(out_stats_file,'wb') as f:
         pickle.dump(models_binned,f)
 
-if __name__ == '__main__':
+def main():
     add_water_cloud = False
     add_all_clouds = False
     outfile = 'results/spectra/spectra.pkl'
@@ -224,4 +220,7 @@ if __name__ == '__main__':
     out_stats_file = 'results/spectra/spectra_cloudy_stats.pkl'
     compute_spectra(add_water_cloud, add_all_clouds, outfile)
     compute_statistics(outfile, out_stats_file)
+
+if __name__ == '__main__':
+    main()
     

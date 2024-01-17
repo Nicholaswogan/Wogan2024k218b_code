@@ -17,15 +17,14 @@ def make_picaso_input_habitable(p, outfile):
     species = pc.dat.species_names[pc.dat.np:-2]
     utils.write_picaso_atmosphere(mix, outfile+'_picaso.pt', species)
 
-def run_model(outfile, T_surf, mix, vdep, eddy, T_trop, relative_humidity,equilibrium_time,atol,atol_min,atol_max):
+def run_model(outfile, T_surf, mix, flux, vdep, eddy, T_trop, relative_humidity,equilibrium_time,atol,atol_min,atol_max):
 
     p = PhotochemClima('input/zahnle_earth_new.yaml',
                    'input/habitable/settings_habitable_template.yaml',
                    'input/k2_18b_stellar_flux.txt',
                    'input/habitable/atmosphere_init.txt',
                    'input/habitable/species_climate.yaml',
-                   'input/habitable/settings_climate_scale=0.7.yaml',
-                   data_dir='/Users/nicholas/Documents/Research_local/PhotochemPy/photochem_clima_data')
+                   'input/habitable/settings_climate_scale=0.7.yaml')
     p.pc.var.verbose = 1
     p.pc.var.equilibrium_time=equilibrium_time
     p.pc.var.atol=atol
@@ -39,6 +38,8 @@ def run_model(outfile, T_surf, mix, vdep, eddy, T_trop, relative_humidity,equili
             continue
         else:
             p.pc.set_lower_bc(sp,bc_type='mix',mix=mix[sp])
+    for sp in flux:
+        p.pc.set_lower_bc(sp,bc_type='flux',flux=flux[sp])
     for sp in vdep:
         p.pc.set_lower_bc(sp,bc_type='vdep',vdep=vdep[sp])
     p.relative_humidity = relative_humidity
@@ -131,6 +132,7 @@ def default_params():
     params['outfile'] = None
     params['T_surf'] = 320.0
     params['mix'] = {'H2O': 200.0, 'CO2': 0.008, 'N2': 1.0e-2}
+    params['flux'] = {}
     params['vdep'] = {'CO': 0.0}
     params['eddy'] = 5.0e5
     params['T_trop'] = 215.0
@@ -155,12 +157,15 @@ def model1():
 def model2():
     params = default_params()
     params['outfile'] = 'results/habitable/model2'
-    params['mix'] = {'H2O': 200.0, 'CO2': 0.008, 'N2': 3.0e-3, 'CH4': 2.0e-2}
+    params['mix'] = {'H2O': 200.0, 'CO2': 0.008, 'N2': 3.0e-3}
+    params['flux'] = {'CH4': 5.033423147579211e+10}
     params['vdep'] = {'CO': 1.2e-4}
     params['eddy'] = 5.0e5
+    params['equilibrium_time'] = 1.0e15
     return params
 
-if __name__ == "__main__":
+def main():
+    np.random.seed(0)
     threadpool_limits(limits=1)
     models = [
         model1,
@@ -171,6 +176,8 @@ if __name__ == "__main__":
     p = Pool(2)
     p.map(wrap, models)
 
+if __name__ == "__main__":
+    main()
 
 
 
