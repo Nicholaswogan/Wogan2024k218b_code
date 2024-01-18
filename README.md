@@ -16,7 +16,7 @@ Next, run the code below to install and setup picaso v3.1.2.
 ```bash
 pip install picaso==3.1.2
 
-# Get reference
+# Get reference data
 wget https://github.com/natashabatalha/picaso/archive/4d90735.zip
 unzip 4d90735.zip
 cp -r picaso-4d907355da9e1dcca36cd053a93ef6112ce08807/reference input/picaso/
