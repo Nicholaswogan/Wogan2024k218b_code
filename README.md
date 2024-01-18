@@ -7,14 +7,13 @@ This repository reproduces Figures 1 through 4 in Wogan et al. (2024), which is 
 If you do not have Anaconda on your system, install it here or in any way you perfer: https://www.anaconda.com/download . Next, run the following code to cerate a conda environment `k218b` with `photochem` v0.4.5 installed.
 
 ```bash
-conda create -n k218b -c conda-forge python photochem=0.4.5 numpy=1.24 matplotlib pandas pip numba xarray cantera pathos threadpoolctl miepython matplotlib-label-lines
+conda create -n k218b -c conda-forge -c bokeh bokeh=2.4.3 python photochem=0.4.5 numpy=1.24 matplotlib pandas pip numba xarray cantera pathos threadpoolctl miepython matplotlib-label-lines
 conda activate k218b
 ```
 
 Next, run the code below to install and setup picaso v3.1.2.
 
 ```bash
-conda install -c bokeh bokeh=2.4.3
 pip install picaso==3.1.2
 
 # Get reference
