@@ -1,4 +1,4 @@
-# K2-18b
+# K2-18b code
 
 This repository reproduces Figures 1 through 4 in Wogan et al. (2024), which is a paper on the K2-18b exoplanet. There are two steps to run the code, as outlined below. This code will only work on MacOS or a Linux OS (Windows will not work).
 
