@@ -13,7 +13,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 def compute_spectra(add_water_cloud, add_all_clouds, outfile):
-    opa = jdi.opannection(wave_range=[0.01,100])
+    filename_db = os.path.join(os.getenv('picaso_refdata'), 'opacities','all_opacities_0.6_6_R60000.db')
+    opa = jdi.opannection(wave_range=[0.01,100],filename_db=filename_db)
     case1 = jdi.inputs()
     case1.phase_angle(0)
     case1.gravity(mass=planets.k2_18b.mass, mass_unit=jdi.u.Unit('M_earth'),

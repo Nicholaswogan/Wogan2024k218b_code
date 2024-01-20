@@ -11,7 +11,7 @@ conda create -n k218b -c conda-forge -c bokeh bokeh=2.4.3 python photochem=0.4.5
 conda activate k218b
 ```
 
-Next, run the code below to install and setup picaso v3.1.2.
+Next, run the code below to install and setup picaso v3.1.2. Note that the installing the opacities can take a very long time if you do not have a good internet connection.
 
 ```bash
 pip install picaso==3.1.2
@@ -25,9 +25,11 @@ echo $picaso_refdata
 rm -rf picaso-4d907355da9e1dcca36cd053a93ef6112ce08807
 rm 4d90735.zip
 
-# Get opacities
-wget https://zenodo.org/records/3759675/files/opacities.db
-mv opacities.db input/picaso/reference/opacities/
+# Get opacities. This can take lot of time.
+wget https://zenodo.org/records/6928501/files/all_opacities_0.6_6_R60000.db.tar.gz
+tar -xvzf all_opacities_0.6_6_R60000.db.tar.gz
+mv all_opacities_0.6_6_R60000.db input/picaso/reference/opacities/
+rm all_opacities_0.6_6_R60000.db.tar.gz
 
 # Get the star stuff
 wget http://ssb.stsci.edu/trds/tarfiles/synphot3.tar.gz
@@ -39,8 +41,9 @@ rm synphot3.tar.gz
 
 # Get more star stuff
 wget https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar
-tar -xvzf hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar
+tar -xvf hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar
 mv grp/redcat/trds/grid/phoenix input/picaso/grp/redcat/trds/grid/
+rm -rf grp
 rm hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar
 
 # Get climate opacity
